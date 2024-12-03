@@ -56,6 +56,7 @@ func main() {
 	var locationIDs1 []int
 	var locationIDs2 []int
 
+	ids := make(map[int]int)
 	reader := bufio.NewReader(os.Stdin)
 	for true {
 		input, _ := reader.ReadString('\n')
@@ -76,15 +77,21 @@ func main() {
 
 		locationIDs1 = append(locationIDs1, col1)
 		locationIDs2 = append(locationIDs2, col2)
+
+		ids[col2] += 1
 	}
 
 	locationIDs1 = mergeSort(locationIDs1)
 	locationIDs2 = mergeSort(locationIDs2)
 
 	totalDistance := 0
+	totalSimilarity := 0
 	for i := 0; i < len(locationIDs1); i++ {
-		totalDistance += int(math.Abs(float64(locationIDs1[i]) - float64(locationIDs2[i])))
+		value := locationIDs1[i]
+		totalDistance += int(math.Abs(float64(value) - float64(locationIDs2[i])))
+		totalSimilarity += value * ids[value]
 	}
 
-    fmt.Printf("Total distance: %v\n", totalDistance)
+	fmt.Printf("Total distance: %v\n", totalDistance)
+	fmt.Printf("Total similarity: %v\n", totalSimilarity)
 }
