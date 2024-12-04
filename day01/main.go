@@ -71,12 +71,12 @@ func main() {
 
 		col1, err := strconv.Atoi(inputArr[0])
 		if err != nil {
-			log.Panic("Invalid input %v", inputArr[0])
+			log.Panicf("Invalid input %v", inputArr[0])
 		}
 
 		col2, err := strconv.Atoi(inputArr[1])
 		if err != nil {
-			log.Panic("Invalid input %v", inputArr[0])
+			log.Panicf("Invalid input %v", inputArr[0])
 		}
 
 		locationIDs1 = append(locationIDs1, col1)
