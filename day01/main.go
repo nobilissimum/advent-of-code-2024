@@ -19,12 +19,16 @@ func merge(arr1 []int, arr2 []int) []int {
 
 	for i := 0; i < totalLength; i++ {
 		if pointer1 >= len(arr1) {
-			result[i] = arr2[pointer2]
-			pointer2 += 1
-		} else if pointer2 >= len(arr2) {
-			result[i] = arr1[pointer1]
-			pointer1 += 1
-		} else if arr1[pointer1] < arr2[pointer2] {
+            result = append(result[:i], arr2[pointer2:]...)
+            break
+		}
+
+        if pointer2 >= len(arr2) {
+            result = append(result[:i], arr1[pointer1:]...)
+            break
+		}
+
+        if arr1[pointer1] < arr2[pointer2] {
 			result[i] = arr1[pointer1]
 			pointer1 += 1
 		} else {
