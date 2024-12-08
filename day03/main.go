@@ -12,6 +12,8 @@ const inputFile = "input"
 var (
 	patternStart = []byte("mul(")
 	patternEnd   = []byte(")")
+	patternDont  = []byte("don't()")
+	patternDo    = []byte("do()")
 )
 
 func main() {
@@ -19,6 +21,8 @@ func main() {
 	if err != nil {
 		log.Panicf("Can't read file: %v\n", inputFile)
 	}
+
+	do := true
 
 	num1 := ""
 	num2 := ""
@@ -30,6 +34,7 @@ func main() {
 		if match >= 2 {
 			value := string(content[index])
 			if value == ")" {
+				index -= 1
 				match = 0
 				num1Value, err := strconv.Atoi(num1)
 				if err != nil {
@@ -51,6 +56,7 @@ func main() {
 			if err != nil {
 				num1 = ""
 				num2 = ""
+				index -= 1
 				match = 0
 				continue
 			}
@@ -66,6 +72,7 @@ func main() {
 				if num1 == "" {
 					num1 = ""
 					num2 = ""
+					index -= 1
 					match = 0
 					continue
 				}
@@ -78,6 +85,7 @@ func main() {
 			if err != nil {
 				num1 = ""
 				num2 = ""
+				index -= 1
 				match = 0
 				continue
 			}
@@ -86,16 +94,30 @@ func main() {
 			continue
 		}
 
+		if index >= len(content)-len(patternStart) {
+			break
+		}
 
-		value := string(content[index:index+4])
-		if value == string(patternStart) {
-			index += 3
+		if !do && index < len(content)-len(patternDo) && string(content[index : index+len(patternDo)]) == string(patternDo) {
+			do = true
+			index += len(patternDo) - 1
+			continue
+		}
+
+		if !do {
+			continue
+		}
+
+		if string(content[index : index+len(patternStart)]) == string(patternStart) {
+			index += len(patternStart) - 1
 			match = 1
 			continue
 		}
 
-		if index >= len(content) - 4 {
-			break
+		if do && index < len(content)-len(patternDont) && string(content[index : index+len(patternDont)]) == string(patternDont) {
+			do = false
+			index += len(patternDont) - 1
+			continue
 		}
 	}
 
