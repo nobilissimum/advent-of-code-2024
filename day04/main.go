@@ -9,18 +9,39 @@ import (
 
 const (
 	inputFile = "input"
-	pattern   = "XMAS"
+	pattern   = "MAS"
 )
 
-func isXmas(data *[][]string, x int, y int, xDirection int, yDirection int) int {
-	add := 1
-	for i := 1; i < len(pattern); i++ {
-		if (*data)[y+(i*yDirection)][x+(i*xDirection)] != string(pattern[i]) {
-			add = 0
-			break
+func isValidEdge(edges []string) bool {
+	for _, value := range edges {
+		if value != string(pattern[0]) && value != string(pattern[len(pattern)-1]) {
+			return false
 		}
 	}
-	return add
+
+	return true
+}
+
+func isXmas(data *[][]string, x int, y int) int {
+	ne := (*data)[y+1][x+1]
+	se := (*data)[y-1][x+1]
+	sw := (*data)[y-1][x-1]
+	nw := (*data)[y+1][x-1]
+
+	isValidEdge := isValidEdge([]string{ne, se, sw, nw})
+	if !isValidEdge {
+		return 0
+	}
+
+	if (ne == string(pattern[0]) && sw != string(pattern[len(pattern)-1])) || (ne == string(pattern[len(pattern)-1]) && sw != string(pattern[0])) {
+		return 0
+	}
+
+	if (nw == string(pattern[0]) && se != string(pattern[len(pattern)-1])) || (nw == string(pattern[len(pattern)-1]) && se != string(pattern[0])) {
+		return 0
+	}
+
+	return 1
 }
 
 func main() {
@@ -36,53 +57,18 @@ func main() {
 	}
 
 	appearances := 0
-	for y := 0; y < len(data); y++ {
+	for y := 1; y < len(data)-(len(pattern)/2); y++ {
 		row := data[y]
 		if len(row) <= 0 {
 			continue
 		}
 
-		for x := 0; x < len(row); x++ {
-			if data[y][x] != string(pattern[0]) {
+		for x := 1; x < len(row)-(len(pattern)/2); x++ {
+			if data[y][x] != string(pattern[len(pattern)/2]) {
 				continue
 			}
 
-			n := y >= len(pattern) - 1
-			e := x <= len(row)-len(pattern)
-			s := y <= len(data)-len(pattern)
-			w := x >= len(pattern) - 1
-
-			if n {
-				appearances += isXmas(&data, x, y, 0, -1)
-			}
-
-			if n && e {
-				appearances += isXmas(&data, x, y, 1, -1)
-			}
-
-			if e {
-				appearances += isXmas(&data, x, y, 1, 0)
-			}
-
-			if s && e {
-				appearances += isXmas(&data, x, y, 1, 1)
-			}
-
-			if s {
-				appearances += isXmas(&data, x, y, 0, 1)
-			}
-
-			if s && w {
-				appearances += isXmas(&data, x, y, -1, 1)
-			}
-
-			if w {
-				appearances += isXmas(&data, x, y, -1, 0)
-			}
-
-			if n && w {
-				appearances += isXmas(&data, x, y, -1, -1)
-			}
+			appearances += isXmas(&data, x, y)
 		}
 	}
 
